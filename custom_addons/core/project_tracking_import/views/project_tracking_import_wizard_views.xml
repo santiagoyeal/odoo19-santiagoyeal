@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Project Tracking Import Wizard Form View -->
+    <record id="view_project_tracking_import_wizard_form" model="ir.ui.view">
+        <field name="name">project.tracking.import.wizard.form</field>
+        <field name="model">project.tracking.import.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Import Projects from ZIP">
+                <group>
+                    <field name="zip_files" widget="many2many_binary"/>
+                    <field name="duplicate_handling"/>
+                </group>
+                <footer>
+                    <button name="action_import" string="Import" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Project Tracking Import Wizard Form View (Results) -->
+    <record id="view_project_tracking_import_wizard_form_results" model="ir.ui.view">
+        <field name="name">project.tracking.import.wizard.form.results</field>
+        <field name="model">project.tracking.import.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Import Results">
+                <group>
+                    <field name="import_log" nolabel="1" widget="text"/>
+                </group>
+                <footer>
+                    <button string="Close" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Project Tracking Import Action -->
+    <record id="action_project_tracking_import" model="ir.actions.act_window">
+        <field name="name">Import from ZIP</field>
+        <field name="res_model">project.tracking.import.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>

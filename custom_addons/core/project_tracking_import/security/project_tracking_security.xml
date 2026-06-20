@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Project Import Access Rights -->
+    <record id="project_import_user_group" model="res.groups">
+        <field name="name">Project Import User</field>
+        <field name="category_id" ref="base.module_category_project_management"/>
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+
+    <record id="project_import_manager_group" model="res.groups">
+        <field name="name">Project Import Manager</field>
+        <field name="category_id" ref="base.module_category_project_management"/>
+        <field name="implied_ids" eval="[(4, ref('project_import_user_group'))]"/>
+        <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
+    </record>
+
+    <!-- Wizard Access -->
+    <record id="project_tracking_import_wizard_access" model="ir.model.access">
+        <field name="name">project.tracking.import.wizard.access</field>
+        <field name="model_id" ref="model_project_tracking_import_wizard"/>
+        <field name="group_id" ref="project_import_user_group"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="True"/>
+    </record>
+
+    <!-- Extended access for native models (Sale Order) -->
+    <record id="project_import_sale_order_access" model="ir.model.access">
+        <field name="name">project.import.sale.order</field>
+        <field name="model_id" ref="sale.model_sale_order"/>
+        <field name="group_id" ref="project_import_user_group"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <!-- Extended access for native models (Project) -->
+    <record id="project_import_project_access" model="ir.model.access">
+        <field name="name">project.import.project</field>
+        <field name="model_id" ref="project.model_project_project"/>
+        <field name="group_id" ref="project_import_user_group"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <!-- Extended access for native models (Analytic Line/Timesheet) -->
+    <record id="project_import_analytic_line_access" model="ir.model.access">
+        <field name="name">project.import.analytic.line</field>
+        <field name="model_id" ref="analytic.model_account_analytic_line"/>
+        <field name="group_id" ref="project_import_user_group"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+</odoo>

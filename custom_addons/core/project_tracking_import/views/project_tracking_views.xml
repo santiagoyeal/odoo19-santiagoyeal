@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Project Tree View (Native) -->
+    <record id="view_project_tree_import" model="ir.ui.view">
+        <field name="name">project.tree.import</field>
+        <field name="model">project.project</field>
+        <field name="arch" type="xml">
+            <tree string="Projects (Imported)">
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="date_deadline"/>
+                <field name="stage_id"/>
+                <field name="total_hours" widget="float_time"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Project Form View (Native) -->
+    <record id="view_project_form_import" model="ir.ui.view">
+        <field name="name">project.form.import</field>
+        <field name="model">project.project</field>
+        <field name="arch" type="xml">
+            <form string="Project (Imported)">
+                <header>
+                    <button name="%(action_project_tracking_import)d" type="action" string="Import from ZIP" class="btn-primary"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Project Name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="partner_id"/>
+                            <field name="date_deadline"/>
+                            <field name="stage_id"/>
+                        </group>
+                        <group>
+                            <field name="user_id"/>
+                            <field name="company_id"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Timesheets">
+                            <field name="task_ids">
+                                <tree>
+                                    <field name="name"/>
+                                    <field name="stage_id"/>
+                                    <field name="planned_hours"/>
+                                    <field name="total_hours_spent"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Description">
+                            <field name="description" nolabel="1"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Project Search View (Native) -->
+    <record id="view_project_search_import" model="ir.ui.view">
+        <field name="name">project.search.import</field>
+        <field name="model">project.project</field>
+        <field name="arch" type="xml">
+            <search string="Projects">
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="stage_id"/>
+                <filter name="my_projects" string="My Projects" domain="[('user_id', '=', uid)]"/>
+                <separator/>
+                <group expand="0" string="Group By">
+                    <filter name="group_partner" string="Customer" context="{'group_by': 'partner_id'}"/>
+                    <filter name="group_stage" string="Stage" context="{'group_by': 'stage_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Project Action -->
+    <record id="action_project_import" model="ir.actions.act_window">
+        <field name="name">Imported Projects</field>
+        <field name="res_model">project.project</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Import your first project from Notion
+            </p>
+            <p>
+                Import projects from Notion-style markdown files using the "Import from ZIP" button.
+            </p>
+        </field>
+    </record>
+
+    <!-- Menu Item -->
+    <menuitem id="menu_project_import_root" name="Project Import" parent="project.menu_main_pm" sequence="10"/>
+    <menuitem id="menu_project_import" name="Imported Projects" parent="menu_project_import_root" action="action_project_import" sequence="1"/>
+</odoo>

@@ -1,0 +1,21 @@
+/* Project Tracking Import Styles */
+
+.o_project_tracking_form .oe_title h1 {
+    margin-bottom: 20px;
+}
+
+.o_project_tracking_form .oe_subtotal_footer {
+    margin-top: 20px;
+}
+
+.project_tracking_priority_low {
+    color: #28a745;
+}
+
+.project_tracking_priority_medium {
+    color: #ffc107;
+}
+
+.project_tracking_priority_high {
+    color: #dc3545;
+}
