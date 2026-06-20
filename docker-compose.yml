@@ -1,35 +1,42 @@
 ﻿services:
-
   db:
     image: postgres:15
     environment:
       POSTGRES_DB: postgres
       POSTGRES_USER: odoo
       POSTGRES_PASSWORD: odoo
+      PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
-      - ./data/pg:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
     restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U odoo -d postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   odoo:
     build:
       context: ./odoo
       args:
         ODOO_VERSION: 19.0
-
     ports:
       - "8069:8069"
       - "5678:5678"
-
     volumes:
       - ./custom_addons:/mnt/extra-addons
       - ./odoo_src:/mnt/odoo
       - ./enterprise:/mnt/enterprise
       - ./odoo/odoo.conf:/etc/odoo/odoo.conf
-
     environment:
       HOST: db
       USER: odoo
       PASSWORD: odoo
+      ENABLE_DEBUG: "true"  # Activa debug
+      PYDEVD_DISABLE_FILE_VALIDATION: 1
+    depends_on:
+      db:
+        condition: service_healthy
 
-    command: >
-      bash -c "python3 -m debugpy --listen 0.0.0.0:5678 /usr/bin/odoo -c /etc/odoo/odoo.conf"
+volumes:
+  postgres_data:

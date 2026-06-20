@@ -1,5 +1,12 @@
-﻿__pycache__/
+﻿# Ignorar todas las carpetas __pycache__
+__pycache__/
+
+# También puedes ignorar archivos .pyc
 *.pyc
+*.pyo
+
+# Tus otras configuraciones
 *.log
 data/pg/
 .env
+odoo_src/
