@@ -9,4 +9,3 @@ __pycache__/
 *.log
 data/pg/
 .env
-odoo_src/
