@@ -9,7 +9,6 @@
     <record id="project_import_manager_group" model="res.groups">
         <field name="name">Project Import Manager</field>
         <field name="implied_ids" eval="[(4, ref('project_import_user_group'))]"/>
-        <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
     </record>
 
     <!-- Wizard Access -->
