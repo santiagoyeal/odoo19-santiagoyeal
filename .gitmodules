@@ -2,3 +2,7 @@
 	path = odoo_src
 	url = https://github.com/odoo/odoo.git
 	branch = 19.0
+[submodule "custom_addons/themes/oca-web"]
+	path = custom_addons/themes/oca-web
+	url = https://github.com/OCA/web.git
+	branch = 19.0
