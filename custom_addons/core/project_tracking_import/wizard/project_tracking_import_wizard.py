@@ -68,6 +68,79 @@ Errors: {error_count}
             'target': 'new',
         }
     
+    def _process_zip_file(self, zip_data, zip_filename, log_messages, 
+                          imported_count, updated_count, skipped_count, error_count, 
+                          nested_level=0):
+        """Process ZIP file (supports nested ZIPs)"""
+        try:
+            with zipfile.ZipFile(zip_data, 'r') as zip_ref:
+                # Find all .md files and .zip files
+                md_files = [f for f in zip_ref.namelist() if f.endswith('.md')]
+                zip_files = [f for f in zip_ref.namelist() if f.endswith('.zip')]
+                
+                # Process .md files
+                for md_file in md_files:
+                    try:
+                        # Read the markdown file
+                        with zip_ref.open(md_file) as md_file_obj:
+                            md_content = md_file_obj.read().decode('utf-8')
+                        
+                        # Parse the markdown content
+                        project_data = self._parse_markdown(md_content)
+                        
+                        # Check for duplicates
+                        is_duplicate, existing_record = self._check_duplicate(project_data)
+                        
+                        if is_duplicate and self.duplicate_handling == 'skip':
+                            skipped_count += 1
+                            log_messages.append(f"⏭ Skipped (duplicate): {project_data.get('name', 'Unknown')} from {zip_filename}")
+                            continue
+                        
+                        # Create or update native Odoo records
+                        sale_order, project = self._create_project(project_data, zip_filename, is_duplicate, existing_record)
+                        
+                        if is_duplicate and self.duplicate_handling == 'update':
+                            updated_count += 1
+                            log_messages.append(f"✓ Updated: {project_data.get('name', 'Unknown')} from {zip_filename} -> Sale Order: {sale_order.name}, Project: {project.name}")
+                        else:
+                            imported_count += 1
+                            log_messages.append(f"✓ Imported: {project_data.get('name', 'Unknown')} from {zip_filename} -> Sale Order: {sale_order.name}, Project: {project.name}")
+                        
+                    except Exception as e:
+                        error_count += 1
+                        log_messages.append(f"✗ Error importing {md_file} from {zip_filename}: {str(e)}")
+                        continue
+                
+                # Process nested ZIP files (recursively)
+                for nested_zip in zip_files:
+                    try:
+                        # Read nested ZIP
+                        with zip_ref.open(nested_zip) as nested_zip_obj:
+                            nested_zip_data = io.BytesIO(nested_zip_obj.read())
+                        
+                        # Process nested ZIP
+                        nested_filename = f"{zip_filename}/{nested_zip.split('/')[-1]}"
+                        log_messages.append(f"📦 Processing nested ZIP: {nested_filename}")
+                        
+                        self._process_zip_file(nested_zip_data, nested_filename, log_messages,
+                                             imported_count, updated_count, skipped_count, error_count,
+                                             nested_level + 1)
+                        
+                    except Exception as e:
+                        error_count += 1
+                        log_messages.append(f"✗ Error processing nested ZIP {nested_zip} from {zip_filename}: {str(e)}")
+                        continue
+                
+                if not md_files and not zip_files:
+                    log_messages.append(f"⚠ No .md or .zip files found in {zip_filename}")
+        
+        except zipfile.BadZipFile:
+            error_count += 1
+            log_messages.append(f"✗ Invalid ZIP file: {zip_filename}")
+        except Exception as e:
+            error_count += 1
+            log_messages.append(f"✗ Error processing {zip_filename}: {str(e)}")
+    
     def _parse_markdown(self, content):
         """Parse markdown content and extract project data"""
         data = {
